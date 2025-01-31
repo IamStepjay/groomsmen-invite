@@ -109,25 +109,67 @@
                  });
              }
              
-             document.getElementById("rsvpButton").addEventListener("click", function () {
-                 document.getElementById("response-message").textContent = `You've accepted to be my ${role}! 🎉`;
-                 fetch("https://api.github.com/repos/IamStepjay/groomsmen-invite/contents/rsvp.json", {
-					 method: "PUT",
-					 headers: {
-					 "Authorization": "token YOUR_GITHUB_PERSONAL_ACCESS_TOKEN",
-					 "Content-Type": "application/json"
-					 },
-					 body: JSON.stringify({
-					 message: "RSVP Update",
-					 content: btoa(JSON.stringify([{ name: friendName, role: role }], null, 2)),
-					 sha: "LATEST_FILE_SHA" // Get this using another API call
-					 })
-					 })
-					 .then(response => response.json())
-					 .then(data => console.log("RSVP saved:", data))
-					 .catch(error => console.error("Error:", error));
+             // GitHub API Configuration
+         const GITHUB_USERNAME = "IamStepjay"; // Replace with your GitHub username
+         const REPO_NAME = "groomsmen-invite"; // Replace with your repo name
+         const FILE_PATH = "rsvp.json"; // Path inside the repo
+         const TOKEN = "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"; // Replace with your GitHub token
          
-             });
+         async function submitRSVP(name, role) {
+            try {
+                // Step 1: Get the current RSVP file to fetch the latest SHA and existing data
+                let response = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${FILE_PATH}`, {
+                    headers: {
+                        "Authorization": `token ${TOKEN}`,
+                        "Accept": "application/vnd.github.v3+json"
+                    }
+                });
+         
+                let fileData = await response.json();
+                let currentRSVPs = [];
+         
+                // Step 2: Decode existing RSVP data (if file is not empty)
+                if (fileData.content) {
+                    let decodedContent = atob(fileData.content);
+                    currentRSVPs = JSON.parse(decodedContent);
+                }
+         
+                // Step 3: Append new RSVP
+                currentRSVPs.push({ name, role, timestamp: new Date().toISOString() });
+         
+                // Step 4: Encode and Update JSON File in GitHub
+                let updatedContent = btoa(JSON.stringify(currentRSVPs, null, 2));
+         
+                let updateResponse = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${FILE_PATH}`, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `token ${TOKEN}`,
+                        "Accept": "application/vnd.github.v3+json",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        message: "RSVP Update",
+                        content: updatedContent,
+                        sha: fileData.sha // Required for updating the file
+                    })
+                });
+         
+                let result = await updateResponse.json();
+                console.log("RSVP saved:", result);
+         
+                document.getElementById("response-message").textContent = `You've accepted to be my ${role}! 🎉`;
+                alert("RSVP recorded successfully!");
+         
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Something went wrong. Please try again.");
+            }
+         }
+         
+         // Attach RSVP Submission to Button Click
+         document.getElementById("rsvpButton").addEventListener("click", function () {
+            submitRSVP(friendName, role);
+         });
          });
       </script>
    </body>
