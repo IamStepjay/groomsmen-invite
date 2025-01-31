@@ -114,9 +114,9 @@
             
             document.getElementById("rsvpButton").addEventListener("click", function () {
                 document.getElementById("response-message").textContent = `You've accepted to be my ${role}! 🎉`;
-                fetch("https://script.google.com/macros/s/AKfycbwfoDfqLW4VNQVoUu6h237PsrrM4FIKuB4Ivab18CoJWQd0GS4k850fWECRhYYWr1rv/exec", {
+                fetch("https://script.google.com/macros/s/AKfycbz-wGMjG5R3wIjxbsyEMdDu-8_ZmmjES1rCMZes_TS1Y15no9CkVNfhwlKT8mh436mD/exec", {
 					method: "POST",
-					mode: "cors",  // Ensures cross-origin requests
+					mode: "cors",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({ name: friendName, role: role })
 				})
