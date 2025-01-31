@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Be My Groomsman</title>
+	<link rel="icon" type="image/png" href="favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         body {
@@ -88,13 +89,13 @@
             
             // Define roles for each friend
             const roles = {
-                "Funbi": "Best Man?",
-                "Bolaji": "Groomsman?",
-                "Mikun": "Groomsman?"
+                "Funbi": "Best Man",
+                "Bolaji": "Groomsman",
+                "Mikun": "Groomsman"
             };
             
 			const role = roles[friendName] || "Groomsman";
-            document.getElementById("roleText").textContent = `Will You Be My ${role}`;
+            document.getElementById("roleText").textContent = `Will You Be My ${role}?`;
             
             const gallery = document.getElementById("photoGallery");
             const images = {
