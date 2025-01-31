@@ -114,15 +114,15 @@
             
             document.getElementById("rsvpButton").addEventListener("click", function () {
                 document.getElementById("response-message").textContent = `You've accepted to be my ${role}! 🎉`;
-                fetch("https://script.google.com/macros/s/AKfycbxMnLK5PgWumIZ7lS3yu5XcksPBDSWXxXq9antH1oZXivKn0yjDddHhM9F-8jRYoDht/exec", {
-                    method: "POST",
-					mode: "cors",
-                    body: JSON.stringify({ name: friendName, role: role }),
-                    headers: { "Content-Type": "application/json" }
-                })
-                .then(response => response.text())
-                .then(data => console.log("RSVP recorded:", data))
-                .catch(error => console.error("Error:", error));
+                fetch("https://script.google.com/macros/s/AKfycbwfoDfqLW4VNQVoUu6h237PsrrM4FIKuB4Ivab18CoJWQd0GS4k850fWECRhYYWr1rv/exec", {
+					method: "POST",
+					mode: "cors",  // Ensures cross-origin requests
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ name: friendName, role: role })
+				})
+				.then(response => response.json())
+				.then(data => console.log("RSVP recorded:", data))
+				.catch(error => console.error("Error:", error));
             });
         });
     </script>
