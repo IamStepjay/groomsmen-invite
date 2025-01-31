@@ -111,7 +111,7 @@
              
              document.getElementById("rsvpButton").addEventListener("click", function () {
                  document.getElementById("response-message").textContent = `You've accepted to be my ${role}! 🎉`;
-                 fetch("https://api.github.com/repos/YOUR_USERNAME/YOUR_REPO/contents/rsvp.json", {
+                 fetch("https://api.github.com/repos/IamStepjay/groomsmen-invite/contents/rsvp.json", {
 					 method: "PUT",
 					 headers: {
 					 "Authorization": "token YOUR_GITHUB_PERSONAL_ACCESS_TOKEN",
