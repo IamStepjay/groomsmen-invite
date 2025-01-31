@@ -111,21 +111,22 @@
              
              document.getElementById("rsvpButton").addEventListener("click", function () {
                  document.getElementById("response-message").textContent = `You've accepted to be my ${role}! 🎉`;
-                 fetch("https://script.google.com/macros/s/AKfycbyIQWg1a0lBns3Sd2VuDQa8SpTp6im9NA9r_nIpdd9TtCvYI1hT0TVnNEUubWUX2QFY/exec", {
-         method: "POST",
-         mode: "cors", 
-         headers: { "Content-Type": "application/json" },
-         body: JSON.stringify({ name: friendName, role: role })
-         })
-         .then(response => response.json())
-         .then(data => {
-         if (data.status === "success") {
-         alert("RSVP recorded! 🎉");
-         } else {
-         alert("Something went wrong. Please try again.");
-         }
-         })
-         .catch(error => console.error("Error:", error));
+                 fetch("https://api.github.com/repos/YOUR_USERNAME/YOUR_REPO/contents/rsvp.json", {
+					 method: "PUT",
+					 headers: {
+					 "Authorization": "token YOUR_GITHUB_PERSONAL_ACCESS_TOKEN",
+					 "Content-Type": "application/json"
+					 },
+					 body: JSON.stringify({
+					 message: "RSVP Update",
+					 content: btoa(JSON.stringify([{ name: friendName, role: role }], null, 2)),
+					 sha: "LATEST_FILE_SHA" // Get this using another API call
+					 })
+					 })
+					 .then(response => response.json())
+					 .then(data => console.log("RSVP saved:", data))
+					 .catch(error => console.error("Error:", error));
+         
              });
          });
       </script>
