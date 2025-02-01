@@ -77,29 +77,48 @@
          <div id="response-message"></div>
          <div class="photo-gallery" id="photoGallery"></div>
       </div>
-      <script>
+      <script type="module">
+         // ✅ Import Firebase SDK
+         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+         
+         // ✅ Your Firebase Configuration (Paste from Firebase Console)
+         const firebaseConfig = {
+             apiKey: "AIzaSyCKr8RGDLbdmSlxckbrqlXlnE1sLTiGgis",
+             authDomain: "groomsmen-invite.firebaseapp.com",
+             projectId: "groomsmen-invite",
+             storageBucket: "groomsmen-invite.firebasestorage.app",
+             messagingSenderId: "372447291615",
+             appId: "1:372447291615:web:913d62f1990b2a7d54a16a"
+         };
+         
+         // ✅ Initialize Firebase & Firestore
+         const app = initializeApp(firebaseConfig);
+         const db = getFirestore(app);
+         
          document.addEventListener("DOMContentLoaded", function () {
              const urlParams = new URLSearchParams(window.location.search);
              const friendName = urlParams.get("name") || "Friend";
              document.querySelector("h1").textContent = `Hey ${friendName}!`;
-             
+         
              // Define roles for each friend
              const roles = {
                  "Funbi": "Best Man",
                  "Bolaji": "Groomsman",
                  "Mikun": "Groomsman"
              };
-             
-         const role = roles[friendName] || "Groomsman";
+         
+             const role = roles[friendName] || "Groomsman";
              document.getElementById("roleText").textContent = `Will You Be My ${role}?`;
-             
+         
+             // Photo Gallery Management
              const gallery = document.getElementById("photoGallery");
              const images = {
                  "Funbi": ["FB1.jpg", "FB2.jpg"],
                  "Mikun": ["MK1.jpg", "MK2.jpg"],
                  "Bolaji": ["B1.jpg"]
              };
-             
+         
              if (images[friendName] && images[friendName].length > 0) {
                  images[friendName].forEach(imgSrc => {
                      let img = document.createElement("img");
@@ -108,68 +127,28 @@
                      gallery.appendChild(img);
                  });
              }
-             
-             // GitHub API Configuration
-         const GITHUB_USERNAME = "IamStepjay"; // Replace with your GitHub username
-         const REPO_NAME = "groomsmen-invite"; // Replace with your repo name
-         const FILE_PATH = "rsvp.json"; // Path inside the repo
-         const TOKEN = "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"; // Replace with your GitHub token
          
-         async function submitRSVP(name, role) {
-            try {
-                // Step 1: Get the current RSVP file to fetch the latest SHA and existing data
-                let response = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${FILE_PATH}`, {
-                    headers: {
-                        "Authorization": `Bearer ${TOKEN}`,
-                        "Accept": "application/vnd.github.v3+json"
-                    }
-                });
+             // ✅ Function to Submit RSVP to Firestore
+             async function submitRSVP(name, role) {
+                 try {
+                     await addDoc(collection(db, "rsvps"), {
+                         name: name,
+                         role: role,
+                         timestamp: new Date().toISOString()
+                     });
          
-                let fileData = await response.json();
-                let currentRSVPs = [];
+                     document.getElementById("response-message").textContent = `You've accepted to be my ${role}! 🎉`;
+                     alert("RSVP recorded successfully!");
+                 } catch (error) {
+                     console.error("Error:", error);
+                     alert("Something went wrong. Please try again.");
+                 }
+             }
          
-                // Step 2: Decode existing RSVP data (if file is not empty)
-                if (fileData.content) {
-                    let decodedContent = atob(fileData.content);
-                    currentRSVPs = JSON.parse(decodedContent);
-                }
-         
-                // Step 3: Append new RSVP
-                currentRSVPs.push({ name, role, timestamp: new Date().toISOString() });
-         
-                // Step 4: Encode and Update JSON File in GitHub
-                let updatedContent = btoa(JSON.stringify(currentRSVPs, null, 2));
-         
-                let updateResponse = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${FILE_PATH}`, {
-                    method: "PUT",
-                    headers: {
-                        "Authorization": `Bearer ${TOKEN}`,
-                        "Accept": "application/vnd.github.v3+json",
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        message: "RSVP Update",
-                        content: updatedContent,
-                        sha: fileData.sha // Required for updating the file
-                    })
-                });
-         
-                let result = await updateResponse.json();
-                console.log("RSVP saved:", result);
-         
-                document.getElementById("response-message").textContent = `You've accepted to be my ${role}! 🎉`;
-                alert("RSVP recorded successfully!");
-         
-            } catch (error) {
-                console.error("Error:", error);
-                alert("Something went wrong. Please try again.");
-            }
-         }
-         
-         // Attach RSVP Submission to Button Click
-         document.getElementById("rsvpButton").addEventListener("click", function () {
-            submitRSVP(friendName, role);
-         });
+             // ✅ Attach RSVP Submission to Button Click
+             document.getElementById("rsvpButton").addEventListener("click", function () {
+                 submitRSVP(friendName, role);
+             });
          });
       </script>
    </body>
